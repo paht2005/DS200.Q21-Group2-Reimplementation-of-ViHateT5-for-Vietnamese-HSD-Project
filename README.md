@@ -157,6 +157,7 @@ DS200.Q21_Project/
 │   └── demo.ipynb                    # Interactive demo for inference on 3 tasks
 │
 ├── tests/                            # Unit tests and quality gates
+│   ├── README.md                     # Testing guide (pytest, branch, PR workflow)
 │   ├── conftest.py                   # Shared pytest fixtures
 │   ├── test_config.py                # TrainConfig dataclass tests
 │   ├── test_data_loader.py           # TextDataset and dataset routing tests
