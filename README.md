@@ -6,7 +6,16 @@
 
 <h1 align="center"><b>DS200.Q21 - Big Data Analysis</b></h1>
 
-# **DS200 Course Project (Group 02): Reimplementation and Improvement of ViHateT5 for Vietnamese Hate Speech Detection**
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.9+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" />
+  <img src="https://img.shields.io/badge/%F0%9F%A4%97_Transformers-FFD21E?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/%F0%9F%A4%97_Datasets-FFD21E?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" />
+  <img src="https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white" />
+</p>
+
+# **DS200.Q21 Course Project (Group 02): Reimplementation and Improvement of ViHateT5 for Vietnamese Hate Speech Detection**
 
 > **Based on paper:** Luan Thanh Nguyen, *"[ViHateT5: Enhancing Hate Speech Detection in Vietnamese With a Unified Text-to-Text Transformer Model](https://aclanthology.org/2024.findings-acl.355.pdf)"*, Findings of ACL 2024, pp. 5948–5961.
 >
@@ -18,12 +27,20 @@
 
 ---
 
+<p align="center">
+  <img src="results/thumbnail.png" alt="Project thumbnail" width="400">
+</p>
+
+---
+
+---
+
 ## **Team Information - Group 2**
 | No. | Student ID | Full Name | Class Order | Role | Github | Email |
 |----:|:----------:|-----------|:---:|------|--------|-------|
-| 1 | 23521143 | Nguyen Cong Phat | 45 | Leader | [paht2005](https://github.com/paht2005) | 23521143@gm.uit.edu.vn |
-| 2 | 23520032 | Truong Hoang Thanh An | 3 | Member | [Awnpz](https://github.com/Awnpz) | 23520032@gm.uit.edu.vn |
-| 3 | 23520213 | Vu Viet Cuong | 9 | Member | [Kun05-AI](https://github.com/Kun05-AI) | 23520213@gm.uit.edu.vn |
+| 1 | 23521143 | Phat Cong Nguyen | 45 | Leader | [paht2005](https://github.com/paht2005) | 23521143@gm.uit.edu.vn |
+| 2 | 23520032 | An Thanh Hoang Truong | 3 | Member | [Awnpz](https://github.com/Awnpz) | 23520032@gm.uit.edu.vn |
+| 3 | 23520213 | Cuong Viet Vu | 9 | Member | [Kun05-AI](https://github.com/Kun05-AI) | 23520213@gm.uit.edu.vn |
 
 ---
 
@@ -109,10 +126,14 @@ DS200.Q21_Project/
 ├── .env.example                      # Template for environment variables
 ├── .gitignore                        # Git exclusion rules
 │
-├── docs/                             # Course reports, slides, and video demo
+├── docs/                             # Course reports and slides
 │   ├── report.pdf
-│   ├── slide.pdf
-│   └── demo.mp4
+│   └── slide.pdf
+│
+├── results/                          # Experiment results and media assets
+│   ├── thumbnail.png                 # Project thumbnail image
+│   ├── images/                       # Result figures and charts
+│   └── videos/                       # Demo videos
 │
 ├── scripts/                          # Shell scripts for training pipelines
 │   ├── run_pretrain_t5.sh            # T5 pre-training with Span Corruption
