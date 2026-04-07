@@ -219,17 +219,21 @@ Key improvement beyond the original paper:
 
 ## **Installation**
 
-### 1. Clone repository
+### 1. Clone the repository
 ```bash
-git clone <repository-url>
-cd DS200.Q21_Project
+git clone https://github.com/paht2005/DS200.Q21-Group2-Reimplementation-and-Improvement-of-ViHateT5-for-Vietnamese-HSD-Project.git
+cd DS200.Q21-Group2-Reimplementation-and-Improvement-of-ViHateT5-for-Vietnamese-HSD-Project
 ```
 
-### 2. (Optional) Create virtual environment
+### 2. Create a virtual environment (recommended)
 ```bash
 python -m venv .venv
-source .venv/bin/activate      # Linux / Mac
-.venv\Scripts\activate         # Windows
+
+# Activate on Linux / macOS
+source .venv/bin/activate
+
+# Activate on Windows
+.venv\Scripts\activate
 ```
 
 ### 3. Install dependencies
@@ -237,10 +241,13 @@ source .venv/bin/activate      # Linux / Mac
 pip install -r requirements.txt
 ```
 
-### 4. Configure environment
+### 4. Configure environment variables
 ```bash
 cp .env.example .env
-# Edit .env and add your HuggingFace token
+```
+Then open `.env` and add your HuggingFace token:
+```
+HF_TOKEN=your_huggingface_token_here
 ```
 
 ---
