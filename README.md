@@ -318,7 +318,7 @@ python src/evaluate.py \
 ```bash
 uvicorn webapp.main:app --reload --host 0.0.0.0 --port 8000
 ```
-Open [http://localhost:8000](http://localhost:8000). Features:
+Open [http://localhost:8000](http://localhost:8000) or External url: [http://127.0.0.1:8000](http://127.0.0.1:8000). Features:
 - **Modern UI** — Tailwind CSS, dark/light theme, responsive
 - **Faster inference** — Dynamic INT8 quantization (~2x faster on CPU)
 - **Single & Batch** — Type text or upload CSV for bulk predictions
