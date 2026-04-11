@@ -28,7 +28,13 @@
 ---
 
 <p align="center">
+  <h2 align="center"> Thumbnail </h2>
   <img src="results/thumbnail.png" alt="Project thumbnail" width="400">
+
+  <h2 align="center"> Demo Webapp </h2>
+  <img src="results/images/demo_webapp.png" alt="Demo Webapp" width="500">
+
+
 </p>
 
 
