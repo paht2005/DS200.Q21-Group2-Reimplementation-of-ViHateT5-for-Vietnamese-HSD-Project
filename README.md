@@ -300,7 +300,19 @@ bash scripts/run_train_t5.sh \
     --max_length 256
 ```
 
-### 3. Training BERT/PhoBERT (Classification)
+### 3. Training with Focal Loss
+
+Enable focal loss to improve performance on minority classes (`OFFENSIVE`, `HATE`). See the [**Training with Focal Loss**](#training-with-focal-loss) section for full documentation and experimental results.
+
+```bash
+bash scripts/run_train_t5.sh \
+    --pre_trained_ckpt "vihate_t5_pretrain/final" \
+    --use_focal_loss \
+    --focal_gamma 2.0 \
+    --label_smoothing 0.0
+```
+
+### 4. Training BERT/PhoBERT (Classification)
 
 ```bash
 bash scripts/run_train_bert.sh \
@@ -310,7 +322,7 @@ bash scripts/run_train_bert.sh \
     --batch_size 16
 ```
 
-### 4. Evaluation
+### 5. Evaluation
 
 ```bash
 python src/evaluate.py \
@@ -318,7 +330,7 @@ python src/evaluate.py \
     --batch_size 32
 ```
 
-### 5. Interactive Demo
+### 6. Interactive Demo
 
 **Option A — FastAPI Web App (recommended, faster inference):**
 ```bash
@@ -346,14 +358,14 @@ This launches a web UI with:
 
 Open [`notebooks/demo.ipynb`](notebooks/demo.ipynb) in Jupyter to run inference on all three tasks interactively.
 
-### 6. Generate Benchmark Charts
+### 7. Generate Benchmark Charts
 
 ```bash
 python src/visualize.py
 ```
 Saves comparison charts to `results/images/` and sample outputs to `results/test/`.
 
-### 7. Push Models to Hugging Face
+### 8. Push Models to Hugging Face
 
 Two scripts are provided to upload each subfolder in `models/` to its own Hugging Face repository:
 
@@ -511,6 +523,55 @@ After running training, results are saved to `outputs/` or `vihate_t5_pretrain/`
 - **`run_summary.csv`**: Summary of best results (F1, Accuracy, Loss).
 - **`epoch_metrics.csv`**: Detailed metrics per epoch.
 - **`results/evaluation_results.csv`**: Evaluation results on individual test sets.
+
+---
+
+## Training with Focal Loss
+
+Focal loss ([Lin et al., ICCV 2017](https://arxiv.org/abs/1708.02002)) addresses class imbalance by down-weighting easy examples during training, focusing the model on hard-to-classify minority classes. Vietnamese hate speech datasets are inherently imbalanced (`CLEAN >> OFFENSIVE >> HATE`), making focal loss a natural fit.
+
+### Usage
+
+```bash
+bash scripts/run_train_t5.sh \
+    --pre_trained_ckpt "vihate_t5_pretrain/final" \
+    --use_focal_loss \
+    --focal_gamma 2.0 \
+    --label_smoothing 0.0
+```
+
+Or directly via Python:
+
+```bash
+python src/train_t5.py \
+    --model_name models/vit5_finetune_balanced \
+    --data_path data/data.csv \
+    --output_dir results/focal_loss_exp \
+    --use_focal_loss \
+    --focal_gamma 2.0 \
+    --label_smoothing 0.0
+```
+
+### Parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `--use_focal_loss` | `false` | Enable focal loss instead of standard CrossEntropy |
+| `--focal_gamma` | `2.0` | Focusing parameter (0 = standard CE; higher = more focus on hard examples) |
+| `--label_smoothing` | `0.0` | Label smoothing factor (0.0 = no smoothing; 0.1 recommended with focal loss) |
+
+Validation rules enforced at startup: `--focal_gamma >= 0`, `--label_smoothing` ∈ `[0.0, 1.0]`, and both parameters require `--use_focal_loss` to be set.
+
+### CE vs Focal Loss Comparison
+
+Evaluation on the **ViHSD test set** comparing the standard CrossEntropy baseline (`vit5_finetune_balanced`) against the focal loss fine-tuned model (`vit5_focal_loss_exp`):
+
+| Loss Function | Macro F1 | Accuracy | F1 (CLEAN) | F1 (OFFENSIVE) | F1 (HATE) |
+|---------------|----------|----------|------------|----------------|-----------|
+| CrossEntropy (baseline) | 0.6698 | 0.8815 | — | — | — |
+| Focal Loss (γ=2.0) | 0.7478 | 0.9172 | — | — | — |
+
+> Per-class F1 breakdown (CLEAN / OFFENSIVE / HATE) will be filled in after full per-class evaluation completes. See `results/focal_loss_comparison.csv` for the raw data.
 
 ---
 
