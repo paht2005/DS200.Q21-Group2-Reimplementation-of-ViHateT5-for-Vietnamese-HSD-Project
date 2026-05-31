@@ -119,7 +119,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \section{Giới thiệu tổng quan}
 % ============================================================
 
-\begin{frame}{1.1. Bối cảnh và Vấn đề}
+\begin{frame}[fragile, shrink=10]{1.1. Bối cảnh và Vấn đề}
 \begin{columns}[T]
   \column{0.55\textwidth}
   \begin{block}{Ngôn từ thù ghét trên mạng xã hội}
@@ -164,7 +164,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[shrink=5]{1.2. Lý do thực hiện}
+\begin{frame}{1.2. Lý do thực hiện}
 \scriptsize
 
 \setbeamercolor{block title}{bg=uitblue!80,fg=white}
@@ -247,7 +247,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 
 \begin{center}
   \includegraphics[width=0.88\textwidth]{Tong-quan-HSD-multitask-ViHATET5.png}
-  \captionof{figure}{Hình 1. Kiến trúc đa nhiệm ViHateT5: một mô hình Text-to-Text xử lý 3 bài toán HSD tiếng Việt.}
+  \captionof{figure}{Kiến trúc đa nhiệm ViHateT5: một mô hình Text-to-Text xử lý 3 bài toán HSD tiếng Việt.}
 \end{center}
 
 \vspace{0.2cm}
@@ -257,7 +257,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}{1.5. Mục tiêu đồ án}
+\begin{frame}[fragile, shrink=8]{1.5. Mục tiêu đồ án}
 
 \setbeamercolor{block title}{bg=uitblue!80,fg=white}
 \setbeamercolor{block body}{bg=blue!5,fg=black}
@@ -303,169 +303,250 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \section{Phương pháp thực hiện}
 % ============================================================
 
-\begin{frame}[fragile, shrink=5]{2.1. Tổng quan phương pháp (3 bước)}
+\begin{frame}[fragile, shrink=5]{2.1. Tổng quan phương pháp}
+
+\begin{itemize}
+  \item \textbf{Thu thập dữ liệu}: Thu thập 10.8 triệu bình luận từ diễn đàn VOZ để khai thác ngôn ngữ đời thực và các biểu cảm thù ghét.
+  \item \textbf{Kiểm chứng và tiền xử lý}: Loại bỏ nhiễu và sử dụng mô hình ViSoBERT để gán nhãn tự động cho toàn bộ dữ liệu thô.
+  \item \textbf{Huấn luyện mô hình}: Thực hiện tiền huấn luyện trên miền dữ liệu VOZ-HSD và tinh chỉnh đa nhiệm bằng kỹ thuật Task Prefix.
+\end{itemize}
+
+\vspace{0.3cm}
 \begin{center}
-  \includegraphics[width=0.82\textwidth]{So-do-quy-trinh-gan-nhan-du-lieu-VOZ-HSD.png}
-  \captionof{figure}{Hình 2. Sơ đồ quy trình thu thập và gán nhãn dữ liệu VOZ-HSD.}
+  \includegraphics[width=0.75\textwidth]{So-do-quy-trinh-gan-nhan-du-lieu-VOZ-HSD.png}
+  \captionof{figure}{Sơ đồ quy trình thu thập và gán nhãn dữ liệu VOZ-HSD.}
 \end{center}
+\end{frame}
+
+% ----------------------------------------------------------
+\begin{frame}[shrink=5]{2.2. Bước 1 -- Thu thập dữ liệu}
+
+\begin{block}{Nguồn dữ liệu}
+  \textbf{Diễn đàn VOZ} -- nền tảng mạng xã hội có tính tự do ngôn luận cao nhất Việt Nam.\\
+  Phương pháp: Sử dụng công cụ \texttt{BeautifulSoup4} thu thập \textbf{10,747,733 bình luận} ($\approx$ 1.7GB).
+\end{block}
 
 \vspace{0.2cm}
-\setbeamercolor{block title}{bg=uitblue!80,fg=white}
-\setbeamercolor{block body}{bg=blue!5,fg=black}
-\begin{block}{3 bước thực hiện (theo quy trình bài báo)}
-  \begin{enumerate}
-    \item \textbf{Bước 1 -- Thu thập dữ liệu}: Thu thập 10.8M bình luận từ VOZ Forum, tiền xử lý và gán nhãn tự động bằng ViSoBERT.
-    \item \textbf{Bước 2 -- Pre-training chuyên biệt}: Continual pre-training với Span Corruption trên dữ liệu VOZ-HSD (từ ViT5-base).
-    \item \textbf{Bước 3 -- Fine-tuning đa nhiệm}: Huấn luyện Seq2Seq với Task Prefix trên 3 bộ dữ liệu (ViHSD, ViCTSD, ViHOS).
-  \end{enumerate}
-\end{block}
-\end{frame}
-
-% ----------------------------------------------------------
-\begin{frame}[shrink=8]{2.2. Bước 1 -- Gán nhãn tự động (Auto-Labeling)}
-
 \begin{columns}[T]
   \column{0.48\textwidth}
-  \begin{block}{Quy trình gán nhãn}
-    \begin{enumerate}
-      \item Chuyển ViHSD thành 2 nhãn: NONE (Clean) và HATE (Offensive + Hate)
-      \item Fine-tune 10 mô hình BERT trên ViHSD binary
-      \item Chọn mô hình tốt nhất: \textbf{ViSoBERT} (MF1 = 0.8128)
-      \item Gán nhãn toàn bộ 10.8M bình luận VOZ
-    \end{enumerate}
-  \end{block}
-
-  \column{0.48\textwidth}
-  \begin{block}{Kết quả gán nhãn}
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lcc}
-      \toprule
-      \textbf{Nhãn} & \textbf{Số lượng} & \textbf{Tỷ lệ} \\
-      \midrule
-      Clean & 10,223,138 & 95.12\% \\
-      Hate & 524,595 & 4.88\% \\
-      \midrule
-      \textbf{Tổng} & \textbf{10,747,733} & 100\% \\
-      \bottomrule
-    \end{tabular}}
-  \end{block}
-
-  \vspace{0.3cm}
-  \setbeamercolor{block title}{bg=successgreen,fg=white}
-  \setbeamercolor{block body}{bg=green!5,fg=black}
-  \begin{block}{Ý nghĩa}
-    Cho phép pre-training quy mô lớn mà \textbf{không cần gán nhãn thủ công}.
-  \end{block}
-\end{columns}
-\end{frame}
-
-% ----------------------------------------------------------
-\begin{frame}[shrink=8]{2.3. Bước 2 -- Pre-training chuyên biệt (Span Corruption)}
-
-\begin{columns}[T]
-  \column{0.55\textwidth}
-  \begin{block}{Phương pháp: Span Corruption (T5 MLM)}
+  \begin{block}{3 bộ dữ liệu downstream}
     \begin{itemize}
-      \item Che ngẫu nhiên 15\% token liên tiếp (spans)
-      \item Mô hình học dự đoán các span bị che
-      \item Mục đích: học ngôn ngữ mạng xã hội tiếng Việt (teencode, từ lóng, viết tắt)
+      \item \textbf{ViHSD}: 33,400 bình luận (Facebook, YouTube).\\
+        Phân loại 3 nhãn: CLEAN / OFFENSIVE / HATE.
+      \item \textbf{ViCTSD}: 10,000 mẫu (báo chí, mạng xã hội).\\
+        Phát hiện tính độc hại: NONE / TOXIC.
+      \item \textbf{ViHOS}: 11,056 bình luận ($>$26,000 cụm từ độc hại).\\
+        Xác định vị trí thù ghét ở cấp độ âm tiết.
     \end{itemize}
   \end{block}
 
-  \vspace{0.2cm}
-  \begin{block}{Cấu hình huấn luyện}
-    \centering
-    \begin{tabular}{ll}
-      \toprule
-      \textbf{Tham số} & \textbf{Giá trị} \\
-      \midrule
-      Initial Weights & ViT5-base \\
-      Epochs & 20 \\
-      Learning rate & $5 \times 10^{-3}$ \\
-      Batch size & 128 \\
-      Max seq length & 256 \\
-      Optimizer & Adam \\
-      \bottomrule
-    \end{tabular}
-  \end{block}
-
-  \column{0.42\textwidth}
-  \begin{block}{Chiến lược dữ liệu}
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lrl}
-      \toprule
-      \textbf{Chiến lược} & \textbf{Số lượng} & \textbf{Phân phối} \\
-      \midrule
-      100\% Hate & 100,000 & Chỉ Hate \\
-      50\% Balanced & 200,000 & 1:1 \\
-      \bottomrule
-    \end{tabular}}
+  \column{0.48\textwidth}
+  \setbeamercolor{block title}{bg=uitblue!80,fg=white}
+  \setbeamercolor{block body}{bg=blue!5,fg=black}
+  \begin{block}{Mục đích}
+    Sử dụng 3 bộ dataset này để so sánh hiệu năng của VIHATET5 với các mô hình đã có từ trước (baselines BERT).
   \end{block}
 
   \vspace{0.3cm}
   \setbeamercolor{block title}{bg=alertorange,fg=white}
   \setbeamercolor{block body}{bg=orange!5,fg=black}
-  \begin{block}{So sánh với tác giả}
+  \begin{block}{Lưu ý}
+    Do VOZ tăng cường bảo mật, nhóm sử dụng trực tiếp dữ liệu tác giả đã crawl sẵn để đảm bảo tái lập đúng thực nghiệm.
+  \end{block}
+\end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+\begin{frame}[shrink=5]{2.3. Bước 2 -- Kiểm chứng và tiền xử lý (Quy trình)}
+
+\begin{block}{Các bước để gán nhãn tự động}
+  \begin{enumerate}
+    \item \textbf{Chuẩn bị dữ liệu}: Chuyển đổi bộ dữ liệu ViHSD thành hai nhãn: NONE (Clean) và HATE (Offensive + Hate).
+    \item \textbf{Đối chứng mô hình}: Fine-tune đồng loạt \textbf{10 mô hình} ngôn ngữ nhóm BERT đa ngôn ngữ và đơn ngữ tiếng Việt.
+    \item \textbf{Thiết lập thực nghiệm}: Huấn luyện thống nhất trong 3 epochs với lr $1 \times 10^{-5}$ và batch size 16.
+    \item \textbf{Chọn mô hình tốt nhất}: ViSoBERT (MF1 cao nhất) $\Rightarrow$ Dùng để gán nhãn toàn bộ 10.8M bình luận VOZ.
+  \end{enumerate}
+\end{block}
+
+\vspace{0.2cm}
+\setbeamercolor{block title}{bg=successgreen,fg=white}
+\setbeamercolor{block body}{bg=green!5,fg=black}
+\begin{block}{Ý nghĩa}
+  Cho phép tạo pre-training dataset quy mô lớn mà \textbf{không cần gán nhãn thủ công} -- tái lập đúng phương pháp trong paper.
+\end{block}
+\end{frame}
+
+% ----------------------------------------------------------
+\begin{frame}[shrink=10]{2.4. Bước 2 -- Kết quả gán nhãn trên ViHSD (Bảng 1)}
+
+\begin{table}[h]
+  \centering
+  \caption{Kết quả gán nhãn trên dữ liệu ViHSD (binary classification)}
+  \vspace{0.2cm}
+  \resizebox{0.75\textwidth}{!}{%
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Mô hình} & \textbf{Accuracy} & \textbf{Weighted F1} & \textbf{Macro F1} \\
+    \midrule
+    \multicolumn{4}{l}{\textit{Multilingual Pre-trained Models}} \\
+    mBERT (cased) & 0.9094 & 0.7548 & 0.7740 \\
+    mBERT (uncased) & 0.9102 & 0.7557 & 0.7784 \\
+    DistilBERT & 0.9115 & 0.7459 & 0.7754 \\
+    XLM-R (base) & 0.9189 & 0.7722 & 0.8028 \\
+    XLM-R (large) & 0.9204 & 0.7755 & 0.7968 \\
+    \midrule
+    \multicolumn{4}{l}{\textit{Monolingual Pre-trained Models}} \\
+    PhoBERT (base) & 0.9231 & 0.7562 & 0.7764 \\
+    PhoBERT (large) & 0.9245 & 0.7895 & 0.7832 \\
+    PhoBERT\_v2 (base) & 0.9216 & 0.7888 & 0.7810 \\
+    viBERT & 0.9117 & 0.7385 & 0.7771 \\
+    \rowcolor{uitlightblue} \textbf{ViSoBERT} & \textbf{0.9296} & \textbf{0.8051} & \textbf{0.8128} \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+\begin{block}{Kết luận}
+  \textbf{ViSoBERT} đạt MF1 cao nhất (0.8128) $\Rightarrow$ chọn làm HSD Classifier cho auto-labeling VOZ-HSD.
+\end{block}
+\end{frame}
+
+% ----------------------------------------------------------
+\begin{frame}[shrink=8]{2.5. Bước 2 -- Phân phối nhãn và chiến lược pre-training}
+
+\begin{table}[h]
+  \centering
+  \caption{Phân phối sau khi dùng ViSoBERT gán nhãn}
+  \vspace{0.1cm}
+  \resizebox{0.85\textwidth}{!}{%
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Label} & \textbf{Samples (nhóm)} & \textbf{Ratio(\%)} & \textbf{Samples (tác giả)} & \textbf{Ratio(\%)} \\
+    \midrule
+    Clean & 10,223,138 & 95.12\% & 10,163,238 & 94.31\% \\
+    Hate & 524,595 & 4.88\% & 584,495 & 5.69\% \\
+    \midrule
+    \textbf{Tổng cộng} & \textbf{10,747,733} & \textbf{100\%} & \textbf{10,747,733} & \textbf{100\%} \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+\vspace{0.2cm}
+\begin{columns}[T]
+  \column{0.48\textwidth}
+  \begin{table}[h]
+    \centering
+    \caption{Thiết lập của tác giả (10.8M)}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ccc}
+      \toprule
+      \textbf{Ratio (Hate)} & \textbf{Số lượng} & \textbf{Phân phối} \\
+      \midrule
+      100\% & 584,495 & 100\% Hate \\
+      50\% & 1,168,990 & 1:1 (Hate:Clean) \\
+      \textbf{5.54\%} & \textbf{10,747,733} & \textbf{Phân phối gốc} \\
+      \bottomrule
+    \end{tabular}}
+  \end{table}
+
+  \column{0.48\textwidth}
+  \begin{table}[h]
+    \centering
+    \caption{Chiến lược nhóm tái lập (200K)}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{ccc}
+      \toprule
+      \textbf{Chiến lược} & \textbf{Số lượng} & \textbf{Phân phối} \\
+      \midrule
+      Chiến lược 1 & 100,000 & 100\% Hate \\
+      Chiến lược 2 & 200,000 & 1:1 (Hate:Clean) \\
+      \bottomrule
+    \end{tabular}}
+  \end{table}
+\end{columns}
+\end{frame}
+
+% ----------------------------------------------------------
+\begin{frame}[shrink=5]{2.6. Bước 3 -- Pre-training chuyên biệt (Span Corruption)}
+
+\begin{block}{Giai đoạn 1: Pre-training chuyên biệt (Domain-specific)}
+  \textbf{Phương pháp}: Áp dụng kỹ thuật \textbf{Span Corruption} (T5 Masked Language Modeling).\\
+  Che ngẫu nhiên 15\% tokens thành các span liên tiếp $\Rightarrow$ Decoder học tái tạo lại.
+\end{block}
+
+\vspace{0.2cm}
+\begin{columns}[T]
+  \column{0.48\textwidth}
+  \begin{block}{Tác giả thực hiện}
     \begin{itemize}
-      \item Tác giả: 10.8M mẫu, NVIDIA A6000
-      \item Nhóm: 200K mẫu, GPU P100/H200
-      \item Cấu hình tham số: \textbf{giống hoàn toàn}
+      \item Continual Pre-training từ \textbf{ViT5-base} trên \textbf{10.8M} bình luận VOZ-HSD
+      \item Epochs: 20, Max length: 256
+      \item Optimizer: Adam (lr $= 5 \times 10^{-3}$)
+      \item Batch size: 128
+      \item GPU: NVIDIA A6000
+    \end{itemize}
+  \end{block}
+
+  \column{0.48\textwidth}
+  \setbeamercolor{block title}{bg=uitblue!80,fg=white}
+  \setbeamercolor{block body}{bg=blue!5,fg=black}
+  \begin{block}{Nhóm thực hiện}
+    \begin{itemize}
+      \item Sử dụng \textbf{ViT5-base}, huấn luyện trên VOZ-HSD (chỉ \textbf{200,000 mẫu})
+      \item Cấu hình tham số: \textbf{giống hoàn toàn} tác giả
+      \item Epochs: 10, lr: $5 \times 10^{-3}$, batch: 128
+      \item GPU: NVIDIA H200
+      \item Thời gian: 28 phút (hate-only), 58 phút (balanced)
     \end{itemize}
   \end{block}
 \end{columns}
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[shrink=5]{2.4. Bước 3 -- Fine-tuning đa nhiệm (Unified Multi-task)}
+\begin{frame}[shrink=5]{2.7. Bước 3 -- Fine-tuning đa nhiệm (Unified Multi-task)}
 
-\begin{block}{Phương pháp: Sequence-to-Sequence với Task Prefix}
-  Sử dụng tiền tố nhiệm vụ để hợp nhất 3 tập dữ liệu vào một khung huấn luyện duy nhất:
+\begin{block}{Giai đoạn 2: Fine-tuning đa nhiệm}
+  \textbf{Phương pháp}: Sequence-to-Sequence (Text-to-Text Generation).\\
+  Sử dụng tiền tố để hợp nhất 3 tập dữ liệu vào một khung huấn luyện duy nhất:
   \begin{itemize}
-    \item \textbf{ViHSD}: \texttt{hate-speech-detection: <văn bản>} $\Rightarrow$ CLEAN / OFFENSIVE / HATE
-    \item \textbf{ViCTSD}: \texttt{toxic-speech-detection: <văn bản>} $\Rightarrow$ NONE / TOXIC
-    \item \textbf{ViHOS}: \texttt{hate-spans-detection: <văn bản>} $\Rightarrow$ Text với [HATE] tokens
+    \item \textbf{ViHSD}: \texttt{hate-speech-detection: \{văn bản\}} $\Rightarrow$ CLEAN / OFFENSIVE / HATE
+    \item \textbf{ViCTSD}: \texttt{toxic-speech-detection: \{văn bản\}} $\Rightarrow$ NONE / TOXIC
+    \item \textbf{ViHOS}: \texttt{hate-spans-detection: \{văn bản\}} $\Rightarrow$ Text với [HATE] tokens
   \end{itemize}
 \end{block}
 
 \vspace{0.2cm}
 \begin{columns}[T]
   \column{0.48\textwidth}
-  \begin{block}{Cấu hình fine-tuning (T5)}
-    \centering
-    \begin{tabular}{ll}
-      \toprule
-      \textbf{Tham số} & \textbf{Giá trị} \\
-      \midrule
-      Epochs & 4 \\
-      Learning rate & $3 \times 10^{-4}$ \\
-      Batch size & 32 \\
-      Max seq length & 256 \\
-      \bottomrule
-    \end{tabular}
+  \begin{block}{Tác giả thực hiện}
+    \begin{itemize}
+      \item Lấy trọng số ViHATET5 (đã pre-train trên VOZ-HSD) làm điểm bắt đầu
+      \item Epochs: 4, Max length: 256
+      \item Optimizer: Adam (lr $= 5 \times 10^{-3}$)
+      \item Batch size: 32
+    \end{itemize}
   \end{block}
 
   \column{0.48\textwidth}
-  \begin{block}{Cấu hình fine-tuning (BERT)}
-    \centering
-    \begin{tabular}{ll}
-      \toprule
-      \textbf{Tham số} & \textbf{Giá trị} \\
-      \midrule
-      Epochs & 4 (ViHOS: 10) \\
-      Learning rate & $2 \times 10^{-5}$ \\
-      Batch size & 16 \\
-      Max seq length & 256 \\
-      Weight decay & 0.01 \\
-      \bottomrule
-    \end{tabular}
+  \setbeamercolor{block title}{bg=uitblue!80,fg=white}
+  \setbeamercolor{block body}{bg=blue!5,fg=black}
+  \begin{block}{Nhóm thực hiện}
+    \begin{itemize}
+      \item Cấu hình tham số: \textbf{giống hoàn toàn} tác giả
+      \item Epochs: 4, lr: $3 \times 10^{-4}$, batch: 32
+      \item Huấn luyện trên GPU P100 và H200
+      \item Tái lập: mT5, ViT5, ViHateT5 (100K hate-only), ViHateT5 (200K balanced)
+    \end{itemize}
   \end{block}
 \end{columns}
+
+\vspace{0.2cm}
+\begin{block}{Tóm lại}
+  Chuyển đổi từ học tự giám sát (\textit{Span Corruption}) sang học có giám sát đa nhiệm (\textit{Seq2Seq}) để tối ưu hóa khả năng nhận diện sắc thái thù ghét.
+\end{block}
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[shrink=5]{2.5. Đối chứng mô hình -- Baselines BERT (8 mô hình)}
+\begin{frame}[shrink=5]{2.8. Đối chứng mô hình -- Baselines BERT (8 mô hình)}
 
 \begin{columns}[T]
   \column{0.48\textwidth}
@@ -508,7 +589,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[shrink=5]{2.6. Cải tiến so với bài báo gốc}
+\begin{frame}[shrink=5]{2.9. Cải tiến so với bài báo gốc}
 
 \setbeamercolor{block title}{bg=successgreen,fg=white}
 \setbeamercolor{block body}{bg=green!5,fg=black}
@@ -590,119 +671,146 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[shrink=8]{3.2. So sánh mô hình BERT (Bảng 3)}
+\begin{frame}[shrink=8]{3.2. Kết quả sau huấn luyện của các chiến lược (Bảng 5)}
 
 \begin{table}[h]
   \centering
-  \resizebox{0.92\textwidth}{!}{%
-  \begin{tabular}{lcccc}
+  \caption{Kết quả sau huấn luyện của các chiến lược pre-training}
+  \vspace{0.2cm}
+  \resizebox{0.95\textwidth}{!}{%
+  \begin{tabular}{llcccc}
     \toprule
-    \textbf{Mô hình} & \textbf{ViHSD (MF1)} & \textbf{ViCTSD (MF1)} & \textbf{ViHOS (MF1)} & \textbf{Trung bình} \\
+    \textbf{Mô hình} & \textbf{Nguồn dữ liệu} & \textbf{ViHSD} & \textbf{ViCTSD} & \textbf{ViHOS} & \textbf{AVG} \\
     \midrule
-    \rowcolor{uitlightblue} \textbf{ViSoBERT} & \textbf{0.6871} & 0.7045 & \textbf{0.8578} & \textbf{0.7498} \\
-    XLM-RoBERTa & 0.6544 & \textbf{0.7153} & 0.8133 & 0.7277 \\
-    PhoBERT\_v2 & 0.6583 & 0.7139 & 0.7351 & 0.7024 \\
-    BERT (cased) & 0.6427 & 0.6710 & 0.7637 & 0.6925 \\
-    PhoBERT & 0.6360 & 0.7131 & 0.7281 & 0.6924 \\
-    DistilBERT & 0.6224 & 0.6850 & 0.7615 & 0.6896 \\
-    BERT (uncased) & 0.6161 & 0.6796 & 0.7393 & 0.6783 \\
-    viBERT & 0.6149 & 0.6765 & 0.7291 & 0.6735 \\
+    \textbf{VIHATET5} & Bài báo (584,495 samples) & 0.6548 & 0.6134 & 0.8542 & 0.7075 \\
+    & \textcolor{uitblue}{Nhóm tái lập (100,000 samples)} & \textcolor{uitblue}{0.6808} & \textcolor{uitblue}{0.6586} & \textcolor{uitblue}{0.8541} & \textcolor{uitblue}{0.7312} \\
+    \midrule
+    \textbf{VIHATET5} & Bài báo (1,168,990 samples) & 0.6600 & 0.6022 & 0.8577 & 0.7066 \\
+    & \textcolor{uitblue}{Nhóm tái lập (200,000 samples)} & \textcolor{uitblue}{0.6698} & \textcolor{uitblue}{0.7189} & \textcolor{uitblue}{0.8616} & \textcolor{uitblue}{\textbf{0.7501}} \\
+    \midrule
+    \textbf{VIHATET5} & Bài báo (10,747,733 samples) & \textbf{0.6867} & \textbf{0.7358} & \textbf{0.8644} & \textbf{0.7623} \\
+    & \textcolor{uitblue}{Nhóm không tái lập} & \textcolor{uitblue}{--} & \textcolor{uitblue}{--} & \textcolor{uitblue}{--} & \textcolor{uitblue}{--} \\
     \bottomrule
   \end{tabular}}
-  \caption{Macro F1 trên 3 bộ dữ liệu HSD cho các mô hình BERT}
 \end{table}
 
 \begin{block}{Nhận xét}
   \begin{itemize}
-    \item \textbf{ViSoBERT} đạt trung bình MF1 cao nhất (0.7498) nhờ pre-training trên social media
-    \item Mô hình đơn ngữ (PhoBERT, ViSoBERT) vượt trội hơn đa ngôn ngữ trên ViHSD
-    \item XLM-RoBERTa mạnh nhất trên ViCTSD (dữ liệu formal hơn)
+    \item Với chỉ \textbf{200K mẫu}, nhóm đạt AVG 0.7501 -- cạnh tranh với tác giả dùng 1.1M mẫu (0.7066)
+    \item Chiến lược \textbf{Balanced (50\%)} cho kết quả tổng thể tốt nhất
+    \item Nhiều dữ liệu hơn (10.8M) cải thiện hiệu năng nhưng nhóm bị giới hạn tài nguyên GPU
   \end{itemize}
 \end{block}
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[shrink=8]{3.3. So sánh mô hình T5 (Bảng 4)}
+\begin{frame}[shrink=8]{3.3. So sánh mô hình Text-to-Text (Bảng 6)}
 
 \begin{table}[h]
   \centering
+  \caption{Kết quả sau huấn luyện so với các mô hình có kiến trúc Text-to-Text}
+  \vspace{0.2cm}
   \resizebox{0.85\textwidth}{!}{%
-  \begin{tabular}{lcccc}
+  \begin{tabular}{llccc}
     \toprule
-    \textbf{Mô hình} & \textbf{ViHSD (MF1)} & \textbf{ViCTSD (MF1)} & \textbf{ViHOS (MF1)} & \textbf{Trung bình} \\
+    \textbf{Mô hình} & \textbf{Nguồn} & \textbf{ViHSD} & \textbf{ViCTSD} & \textbf{ViHOS} \\
     \midrule
-    \rowcolor{uitlightblue} \textbf{ViHateT5 (Nhóm)} & \textbf{0.6698} & \textbf{0.7189} & \textbf{0.8616} & \textbf{0.7501} \\
-    ViT5 (Base) & 0.6625 & 0.7163 & 0.8612 & 0.7467 \\
-    mT5 (Base) & 0.6246 & 0.7053 & 0.8501 & 0.7267 \\
+    \textbf{VIHATET5} & Bài báo & \textbf{0.6867} & \textbf{0.7358} & 0.8644 \\
+    \midrule
+    \textbf{ViT5} & Bài báo & 0.6695 & 0.6482 & \textbf{0.8690} \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6625} & \textcolor{uitblue}{0.7163} & \textcolor{uitblue}{0.8612} \\
+    \midrule
+    \textbf{mT5} & Bài báo & 0.6676 & 0.6993 & 0.8660 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6246} & \textcolor{uitblue}{0.7053} & \textcolor{uitblue}{0.8501} \\
     \bottomrule
   \end{tabular}}
-  \caption{Macro F1 trên 3 bộ dữ liệu HSD cho các mô hình T5}
 \end{table}
 
-\vspace{0.2cm}
-\begin{columns}[T]
-  \column{0.48\textwidth}
-  \begin{block}{So sánh với bài báo gốc}
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lcc}
-      \toprule
-      \textbf{Mô hình} & \textbf{Bài báo} & \textbf{Nhóm} \\
-      \midrule
-      ViHateT5 (ViHSD) & 0.6867 & 0.6698 \\
-      ViHateT5 (ViCTSD) & 0.7163 & 0.7189 \\
-      ViHateT5 (ViHOS) & 0.8637 & 0.8616 \\
-      \textbf{Trung bình} & \textbf{0.7556} & \textbf{0.7501} \\
-      \bottomrule
-    \end{tabular}}
-  \end{block}
-
-  \column{0.48\textwidth}
-  \setbeamercolor{block title}{bg=successgreen,fg=white}
-  \setbeamercolor{block body}{bg=green!5,fg=black}
-  \begin{block}{Nhận xét}
-    \begin{itemize}
-      \item Nhóm tái triển khai đạt kết quả \textbf{tương đương} bài báo
-      \item Chênh lệch nhỏ do giới hạn dữ liệu pre-training (200K vs 10.8M)
-      \item ViHateT5 vượt trội ViT5 và mT5
-    \end{itemize}
-  \end{block}
-\end{columns}
-\end{frame}
-
-% ----------------------------------------------------------
-\begin{frame}[shrink=8]{3.4. Ảnh hưởng của dữ liệu pre-training (Bảng 5)}
-
-\begin{table}[h]
-  \centering
-  \resizebox{0.9\textwidth}{!}{%
-  \begin{tabular}{llcccc}
-    \toprule
-    \textbf{Chiến lược} & \textbf{Nguồn} & \textbf{Số lượng} & \textbf{ViHSD} & \textbf{ViCTSD} & \textbf{ViHOS} \\
-    \midrule
-    100\% Hate & Bài báo & 584,495 & 0.6548 & 0.6134 & 0.8542 \\
-    100\% Hate & Nhóm & 100,000 & 0.6808 & 0.6586 & 0.8541 \\
-    \midrule
-    50\% Balanced & Bài báo & 1,168,990 & 0.6600 & 0.6022 & 0.8577 \\
-    \rowcolor{uitlightblue} 50\% Balanced & Nhóm & 200,000 & 0.6698 & \textbf{0.7189} & \textbf{0.8616} \\
-    \midrule
-    5.54\% (Full) & Bài báo & 10,747,733 & \textbf{0.6867} & 0.7358 & 0.8644 \\
-    \bottomrule
-  \end{tabular}}
-  \caption{Ảnh hưởng tỷ lệ dữ liệu pre-training đến hiệu năng}
-\end{table}
-
-\begin{block}{Phân tích}
+\begin{block}{Nhận xét}
   \begin{itemize}
-    \item Pre-training \textbf{balanced (50\%)} cho kết quả tổng thể tốt nhất
-    \item Nhiều dữ liệu hơn (10.8M) cải thiện ViHSD nhưng nhóm không có đủ tài nguyên
-    \item Với chỉ 200K mẫu, nhóm đạt kết quả \textbf{cạnh tranh} với tác giả dùng 1.1M mẫu
+    \item \textbf{VIHATET5} vượt trội ViT5 và mT5 trên cả ViHSD và ViCTSD nhờ domain-specific pre-training
+    \item Nhóm tái lập ViT5 đạt kết quả \textbf{tương đương} bài báo (chênh lệch $<$ 1\%)
+    \item mT5 yếu nhất trên ViHSD do chỉ là mô hình đa ngôn ngữ chung, không chuyên biệt tiếng Việt
   \end{itemize}
 \end{block}
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.5. Biểu đồ so sánh tổng quan}
+\begin{frame}[shrink=8]{3.4. So sánh BERT -- Phần 1 (Bảng 7.1)}
+
+\begin{table}[h]
+  \centering
+  \caption{Kết quả sau huấn luyện so với các mô hình thuộc kiến trúc BERT}
+  \vspace{0.2cm}
+  \resizebox{0.85\textwidth}{!}{%
+  \begin{tabular}{llccc}
+    \toprule
+    \textbf{Mô hình} & \textbf{Nguồn} & \textbf{ViHSD} & \textbf{ViCTSD} & \textbf{ViHOS} \\
+    \midrule
+    \textbf{BERT (cased)} & Bài báo & 0.6444 & 0.6710 & 0.7637 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6427} & \textcolor{uitblue}{0.6886} & \textcolor{uitblue}{0.8832} \\
+    \midrule
+    \textbf{XLM-RoBERTa} & Bài báo & 0.6508 & 0.7153 & 0.8133 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6544} & \textcolor{uitblue}{0.7231} & \textcolor{uitblue}{0.8878} \\
+    \midrule
+    \textbf{PhoBERT\_v2} & Bài báo & 0.6660 & 0.7139 & 0.7351 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6583} & \textcolor{uitblue}{0.7304} & \textcolor{uitblue}{0.9031} \\
+    \midrule
+    \textbf{PhoBERT} & Bài báo & 0.6476 & 0.7131 & 0.7281 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6360} & \textcolor{uitblue}{0.7210} & \textcolor{uitblue}{0.8903} \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+\begin{block}{Nhận xét}
+  \begin{itemize}
+    \item Nhóm tái lập đạt kết quả \textbf{cải thiện đáng kể} trên ViHOS so với bài báo gốc
+    \item XLM-RoBERTa là mô hình đa ngôn ngữ mạnh nhất nhờ pre-training cross-lingual lớn
+    \item PhoBERT\_v2 vượt trội PhoBERT nhờ dữ liệu huấn luyện phong phú hơn
+  \end{itemize}
+\end{block}
+\end{frame}
+
+% ----------------------------------------------------------
+\begin{frame}[shrink=8]{3.5. So sánh BERT -- Phần 2 (Bảng 7.2)}
+
+\begin{table}[h]
+  \centering
+  \caption{Kết quả sau huấn luyện so với các mô hình thuộc kiến trúc BERT (tt.)}
+  \vspace{0.2cm}
+  \resizebox{0.85\textwidth}{!}{%
+  \begin{tabular}{llccc}
+    \toprule
+    \textbf{Mô hình} & \textbf{Nguồn} & \textbf{ViHSD} & \textbf{ViCTSD} & \textbf{ViHOS} \\
+    \midrule
+    \textbf{BERT (uncased)} & Bài báo & 0.6292 & 0.6796 & 0.7393 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6161} & \textcolor{uitblue}{0.6569} & \textcolor{uitblue}{0.8706} \\
+    \midrule
+    \textbf{DistilBERT} & Bài báo & 0.6334 & 0.6850 & 0.7615 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6224} & \textcolor{uitblue}{0.6634} & \textcolor{uitblue}{0.8706} \\
+    \midrule
+    \textbf{viBERT} & Bài báo & 0.6285 & 0.6765 & 0.7291 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{0.6149} & \textcolor{uitblue}{0.6946} & \textcolor{uitblue}{0.8589} \\
+    \midrule
+    \textbf{ViSoBERT} & Bài báo & 0.6771 & 0.7145 & 0.8604 \\
+    & \textcolor{uitblue}{Nhóm tái lập} & \textcolor{uitblue}{\textbf{0.6871}} & \textcolor{uitblue}{\textbf{0.7483}} & \textcolor{uitblue}{\textbf{0.9230}} \\
+    \midrule
+    \textbf{VIHATET5} & Bài báo & 0.6867 & 0.7358 & 0.8637 \\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+\begin{block}{Nhận xét}
+  \begin{itemize}
+    \item \textbf{ViSoBERT} (nhóm tái lập) đạt điểm cao nhất trên ViHOS (0.9230) nhờ hiểu ngữ cảnh mạng xã hội
+    \item Các mô hình BERT đơn ngữ tiếng Việt vượt trội trên ViHOS nhờ tokenizer phù hợp
+    \item VIHATET5 vẫn \textbf{dẫn đầu tổng thể} khi xét cả 3 bài toán cùng lúc trong một mô hình duy nhất
+  \end{itemize}
+\end{block}
+\end{frame}
+
+% ----------------------------------------------------------
+\begin{frame}[fragile, shrink=5]{3.6. Biểu đồ so sánh tổng quan}
 \begin{center}
   \includegraphics[width=0.85\textwidth]{model_comparison_macro_f1.png}
   \captionof{figure}{Hình 3. So sánh Macro F1 của 9 mô hình trên 3 benchmark HSD tiếng Việt.}
@@ -710,7 +818,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.6. So sánh mô hình T5 (Biểu đồ)}
+\begin{frame}[fragile, shrink=5]{3.7. So sánh mô hình T5 (Biểu đồ)}
 \begin{center}
   \includegraphics[width=0.70\textwidth]{t5_comparison_macro_f1.png}
   \captionof{figure}{Hình 4. So sánh Macro F1 các mô hình T5: ViHateT5 vượt trội ViT5-base và mT5-base.}
@@ -718,7 +826,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.7. Xếp hạng Macro F1 trung bình}
+\begin{frame}[fragile, shrink=5]{3.8. Xếp hạng Macro F1 trung bình}
 \begin{columns}[T]
   \column{0.52\textwidth}
   \begin{center}
@@ -741,7 +849,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.8. Ảnh hưởng tỷ lệ dữ liệu Pre-training (Biểu đồ)}
+\begin{frame}[fragile, shrink=5]{3.9. Ảnh hưởng tỷ lệ dữ liệu Pre-training (Biểu đồ)}
 \begin{center}
   \includegraphics[width=0.85\textwidth]{pretrain_data_ratio_impact.png}
   \captionof{figure}{Hình 7. Ảnh hưởng tỷ lệ dữ liệu pre-training (100\% hate, 50\% balanced, 5.54\% full) đến hiệu năng downstream.}
@@ -749,7 +857,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.9. Biểu đồ so sánh tổng hợp}
+\begin{frame}[fragile, shrink=5]{3.10. Biểu đồ so sánh tổng hợp}
 \begin{center}
   \includegraphics[width=0.88\textwidth]{combined_comparison.png}
   \captionof{figure}{Hình 8. So sánh tổng hợp toàn bộ mô hình trên các bộ dữ liệu HSD tiếng Việt.}
@@ -757,7 +865,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.10. Confusion Matrix -- ViHateT5 (ViHSD)}
+\begin{frame}[fragile, shrink=5]{3.11. Confusion Matrix -- ViHateT5 (ViHSD)}
 \begin{columns}[T]
   \column{0.48\textwidth}
   \begin{center}
@@ -778,7 +886,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.11. Confusion Matrix -- Các mô hình T5 khác}
+\begin{frame}[fragile, shrink=5]{3.12. Confusion Matrix -- Các mô hình T5 khác}
 \begin{columns}[T]
   \column{0.32\textwidth}
   \begin{center}
@@ -805,7 +913,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.12. Phân bố lỗi -- Error Distribution}
+\begin{frame}[fragile, shrink=5]{3.13. Phân bố lỗi -- Error Distribution}
 \begin{columns}[T]
   \column{0.48\textwidth}
   \begin{center}
@@ -826,7 +934,7 @@ Nguyễn Công Phát \and Trương Hoàng Th An \and Vũ Việt Cương \\
 \end{frame}
 
 % ----------------------------------------------------------
-\begin{frame}[fragile, shrink=5]{3.13. Phân bố lỗi -- So sánh thêm}
+\begin{frame}[fragile, shrink=5]{3.14. Phân bố lỗi -- So sánh thêm}
 \begin{columns}[T]
   \column{0.32\textwidth}
   \begin{center}
