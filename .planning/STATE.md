@@ -1,9 +1,15 @@
 # STATE: ViHateT5 Improvements
 
 ## Current Phase
-**Phase 4: Ensemble Evaluation** — Completed
+**Phase 5: Error Analysis & Visualization** — Context gathered
 
 ## Last Session
+- **2026-05-31**: Phase 5 context gathered (discuss-phase)
+  - Scope: All 5 fine-tuned models, McNemar's test (star pattern + ensemble), combined comparison chart
+  - Output: .planning/05-error-analysis-visualization/05-CONTEXT.md
+  - Resume: /gsd-plan-phase 5
+
+## Previous Session
 - **2026-05-31**: Executed Phase 4 (Ensemble Evaluation)
   - Fixed src/ensemble.py: MPS device detection + label_remap parameter for BERT models
   - Created scripts/run_ensemble.py CLI with full argparse (--models, --all-models, --task, --no-optimize, --weights, --batch-size, --output, --data-file)
