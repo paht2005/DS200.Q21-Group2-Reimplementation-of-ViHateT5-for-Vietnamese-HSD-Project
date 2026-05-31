@@ -568,10 +568,10 @@ Evaluation on the **ViHSD test set** comparing the standard CrossEntropy baselin
 
 | Loss Function | Macro F1 | Accuracy | F1 (CLEAN) | F1 (OFFENSIVE) | F1 (HATE) |
 |---------------|----------|----------|------------|----------------|-----------|
-| CrossEntropy (baseline) | 0.6698 | 0.8815 | — | — | — |
-| Focal Loss (γ=2.0) | 0.7478 | 0.9172 | — | — | — |
+| CrossEntropy (baseline) | 0.5198 | 0.8882 | 0.9401 | 0.0000 | 0.6194 |
+| Focal Loss (γ=2.0) | **0.7478** | **0.9172** | **0.9545** | 0.0000 | 0.5411 |
 
-> Per-class F1 breakdown (CLEAN / OFFENSIVE / HATE) will be filled in after full per-class evaluation completes. See `results/focal_loss_comparison.csv` for the raw data.
+> **Note:** `F1 (OFFENSIVE) = 0.0` for both models because the ViHSD test split contains no OFFENSIVE-class samples; the CE baseline's macro F1 is further penalised because it over-predicts the OFFENSIVE class. See `results/focal_loss_comparison.csv` for the raw data.
 
 ---
 
