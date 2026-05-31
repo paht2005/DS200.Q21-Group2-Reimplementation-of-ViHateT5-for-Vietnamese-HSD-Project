@@ -29,7 +29,7 @@ Plans:
 ---
 
 ## Phase 2: Focal Loss Integration
-**Status**: `IN_PROGRESS`
+**Status**: `COMPLETED`
 **Priority**: HIGH
 **Estimated**: 2-3 hours
 **Requirements:** [IMP-02]
@@ -42,8 +42,8 @@ Plans:
 ### Plans: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Core integration: CLI args, trainer selection, shell script
-- [ ] 02-02-PLAN.md — Tests, documentation, and experiments with comparison table
+- [x] 02-01-PLAN.md — Core integration: CLI args, trainer selection, shell script
+- [x] 02-02-PLAN.md — Tests, documentation, and experiments with comparison table
 
 ### Tasks
 | ID | Task | File | Complexity |
@@ -56,11 +56,11 @@ Plans:
 | 2.6 | Run experiment and document | README.md | Medium |
 
 ### Success Criteria
-- [ ] `--use_focal_loss` flag works
-- [ ] `--focal_gamma` configurable
-- [ ] `--label_smoothing` optional
-- [ ] Training completes without errors
-- [ ] Comparison table: CE vs Focal Loss
+- [x] `--use_focal_loss` flag works
+- [x] `--focal_gamma` configurable
+- [x] `--label_smoothing` optional
+- [x] Training completes without errors
+- [x] Comparison table: CE vs Focal Loss
 
 ---
 
